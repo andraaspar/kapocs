@@ -1,0 +1,27 @@
+Absolute paths:
+
+asset1.txt:                {{asset1.txt}}
+dropin.txt:                {{dropin.txt}}
+dropin-asset.txt:          {{dropin-asset.txt}}
+dropin-asset-template.txt: {{dropin-asset-template.txt}}
+dropin-template.txt:       {{dropin-template.txt}}
+template1.txt:             {{template1.txt}}
+template2.txt:             {{template2.txt}}
+
+sub/asset1.txt:            {{sub/asset1.txt}}
+sub/asset2.txt:            {{sub/asset2.txt}}
+sub/dropin.txt:            {{sub/dropin.txt}}
+
+Relative paths:
+
+../asset1.txt:                {{../asset1.txt}}
+../dropin.txt:                {{../dropin.txt}}
+../dropin-asset.txt:          {{../dropin-asset.txt}}
+../dropin-asset-template.txt: {{../dropin-asset-template.txt}}
+../dropin-template.txt:       {{../dropin-template.txt}}
+../template1.txt:             {{../template1.txt}}
+../template2.txt:             {{../template2.txt}}
+
+./asset1.txt:                 {{./asset1.txt}}
+./asset2.txt:                 {{./asset2.txt}}
+./dropin.txt:                 {{./dropin.txt}}
