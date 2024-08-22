@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { glob } from 'glob'
 import { escapeRegExp } from 'lodash-es'
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
