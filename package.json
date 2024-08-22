@@ -1,9 +1,10 @@
 {
 	"name": "kapocs",
 	"description": "Cache busting CLI tool. Works with any file type.",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"type": "module",
 	"main": "build/index.js",
+	"bin": "build/index.js",
 	"homepage": "https://github.com/andraaspar/kapocs",
 	"author": {
 		"name": "András Parditka",
