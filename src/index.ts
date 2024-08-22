@@ -10,10 +10,13 @@ import { getHashedSubPath } from './fun/getHashedSubPath.js'
 import { hashContent } from './fun/hashContent.js'
 import { hashFile } from './fun/hashFile.js'
 import { resolvePathInTemplate } from './fun/resolvePathInTemplate.js'
+import { stripLeadingSlash } from './fun/stripLeadingSlash.js'
 import { IAsset } from './model/IAsset.js'
+import { makeRelativePathExplicit } from './path/makeRelativePathExplicit.js'
 import { pathDirectory } from './path/pathDirectory.js'
 import { pathFromString } from './path/pathFromString.js'
 import { pathIsRelative } from './path/pathIsRelative.js'
+import { pathStripLeadingSlash } from './path/pathStripLeadingSlash.js'
 import { pathToString } from './path/pathToString.js'
 import { toRelativePath } from './path/toRelativePath.js'
 const argv = await yargs(hideBin(process.argv))
@@ -67,7 +70,7 @@ const argv = await yargs(hideBin(process.argv))
 	.option('suffix', {
 		type: 'string',
 		description:
-			'The prefix for references. Changing this will alter the reference format to search for in templates and asset templates.',
+			'The suffix for references. Changing this will alter the reference format to search for in templates and asset templates.',
 		default: '}}',
 		nargs: 1,
 	})
@@ -79,7 +82,6 @@ const argv = await yargs(hideBin(process.argv))
 	.option('debug', {
 		type: 'boolean',
 		description: 'Show verbose log output.',
-		nargs: 1,
 	})
 	.parse()
 
@@ -114,7 +116,7 @@ if (argv.dropins) {
 		nodir: true,
 		// dot: true,
 	})) {
-		const subPath = pathFromString(dropinSubPathString)
+		const subPath = ['', ...pathFromString(dropinSubPathString)]
 		dropinSubPathStrings.add(pathToString(subPath))
 	}
 }
@@ -129,7 +131,7 @@ for (const assetSubPathString of await glob(argv.assets, {
 	nodir: true,
 	// dot: true,
 })) {
-	const subPath = pathFromString(assetSubPathString)
+	const subPath = ['', ...pathFromString(assetSubPathString)]
 	const subPathString = pathToString(subPath)
 	// Omit dropins.
 	if (dropinSubPathStrings.has(subPathString)) continue
@@ -143,7 +145,7 @@ for (const templateSubPathString of await glob(argv.templates, {
 	nodir: true,
 	// dot: true,
 })) {
-	const subPath = pathFromString(templateSubPathString)
+	const subPath = ['', ...pathFromString(templateSubPathString)]
 	const subPathString = pathToString(subPath)
 	// Omit dropins.
 	if (dropinSubPathStrings.has(subPathString)) continue
@@ -180,7 +182,7 @@ for (const templateSubPathString of templateSubPathStrings) {
 	if (templateAsset) {
 		const templateSubPath = pathFromString(templateSubPathString)
 		const content = await readFile(
-			resolve(sourceFolder, templateSubPathString),
+			resolve(sourceFolder, stripLeadingSlash(templateSubPathString)),
 			{
 				encoding: 'utf8',
 			},
@@ -189,7 +191,7 @@ for (const templateSubPathString of templateSubPathStrings) {
 		while (true) {
 			const result = re.exec(content)
 			if (result == null) break
-			const assetSubPath = pathFromString(result[1])
+			const assetSubPath = makeRelativePathExplicit(pathFromString(result[1]))
 			const resolvedPath = resolvePathInTemplate(templateSubPath, assetSubPath)
 			const asset = assetsBySubPathString.get(pathToString(resolvedPath))
 			if (asset) {
@@ -201,14 +203,19 @@ for (const templateSubPathString of templateSubPathStrings) {
 
 async function processTemplate(templateSubPathString: string) {
 	const isAsset = assetsBySubPathString.has(templateSubPathString)
-	let content = await readFile(resolve(sourceFolder, templateSubPathString), {
-		encoding: 'utf8',
-	})
+	let content = await readFile(
+		resolve(sourceFolder, stripLeadingSlash(templateSubPathString)),
+		{
+			encoding: 'utf8',
+		},
+	)
 	const templateSubPath = pathFromString(templateSubPathString)
 	content = content.replace(
 		re,
 		(all: string, assetSubPathString: string): string => {
-			const assetSubPath = pathFromString(assetSubPathString)
+			const assetSubPath = makeRelativePathExplicit(
+				pathFromString(assetSubPathString),
+			)
 			const resolvedPath = resolvePathInTemplate(templateSubPath, assetSubPath)
 			const resolvedPathString = pathToString(resolvedPath)
 			const asset = assetsBySubPathString.get(resolvedPathString)
@@ -228,27 +235,36 @@ async function processTemplate(templateSubPathString: string) {
 			} else {
 				console.warn(
 					`[siks0o] Template`,
-					JSON.stringify(templateSubPath),
+					JSON.stringify(templateSubPathString),
 					`references missing file:`,
-					JSON.stringify(assetSubPath),
+					JSON.stringify(all),
 				)
+				if (argv.debug) {
+					console.log(`[simh4f] assetSubPath:`, JSON.stringify(assetSubPath))
+					console.log(`[simh5u] resolvedPath:`, JSON.stringify(resolvedPath))
+					console.log(
+						`[simh6f] resolvedPathString:`,
+						JSON.stringify(resolvedPathString),
+					)
+				}
 				// Keep the original string – it's probably not a path. We warned about it above.
 				return all
 			}
 			if (pathIsRelative(assetSubPath) || !argv.base) {
 				// Relative path, or base is set to "".
-				const resultPath = pathFromString(resultPathString)
-				const relativeResultPath = toRelativePath(
-					pathDirectory(templateSubPath),
-					resultPath,
+				const resultPath = pathStripLeadingSlash(
+					pathFromString(resultPathString),
 				)
-				if (!pathIsRelative(relativeResultPath)) {
-					relativeResultPath.unshift('.')
-				}
+				const relativeResultPath = makeRelativePathExplicit(
+					toRelativePath(
+						pathStripLeadingSlash(pathDirectory(templateSubPath)),
+						resultPath,
+					),
+				)
 				return pathToString(relativeResultPath)
 			} else {
 				// Absolute path.
-				return argv.base + resultPathString
+				return argv.base + stripLeadingSlash(resultPathString)
 			}
 		},
 	)
@@ -260,15 +276,17 @@ async function processTemplate(templateSubPathString: string) {
 	} else {
 		targetPath = templateSubPathString
 	}
-	await mkdir(resolve(targetFolder, dirname(targetPath)), { recursive: true })
-	await writeFile(resolve(targetFolder, targetPath), content)
+	await mkdir(resolve(targetFolder, stripLeadingSlash(dirname(targetPath))), {
+		recursive: true,
+	})
+	await writeFile(resolve(targetFolder, stripLeadingSlash(targetPath)), content)
 	return targetPath
 }
 
 for (const dropinSubPathString of dropinSubPathStrings) {
 	await cp(
-		resolve(sourceFolder, dropinSubPathString),
-		resolve(targetFolder, dropinSubPathString),
+		resolve(sourceFolder, stripLeadingSlash(dropinSubPathString)),
+		resolve(targetFolder, stripLeadingSlash(dropinSubPathString)),
 	)
 	if (argv.debug) console.log(`Dropin: ${JSON.stringify(dropinSubPathString)}`)
 }
@@ -283,11 +301,11 @@ while (true) {
 			// A pure asset.
 			asset.result = getHashedSubPath(
 				asset.subPath,
-				await hashFile(resolve(sourceFolder, asset.subPath)),
+				await hashFile(resolve(sourceFolder, stripLeadingSlash(asset.subPath))),
 			)
 			await cp(
-				resolve(sourceFolder, asset.subPath),
-				resolve(targetFolder, asset.result),
+				resolve(sourceFolder, stripLeadingSlash(asset.subPath)),
+				resolve(targetFolder, stripLeadingSlash(asset.result)),
 			)
 			assetsToResolve.delete(asset)
 			if (argv.debug)

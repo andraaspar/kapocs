@@ -37,13 +37,20 @@ Make sure the `--assets` option matches your assets.
 
 Templates are text files that contain references to assets or asset templates. They can be HTML, PHP, or in fact any other text file format.
 
-Templates contain references to assets in the format `{{../to/image.jpg}}` (relative path) or `{{path/to/image.jpg}}` (absolute path).
+Templates contain references to assets in the format `{{../to/image.jpg}}` (relative path) or `{{/path/to/image.jpg}}` (absolute path).
 
 These references will be replaced like so:
 
-`{{../to/image.jpg}}` → `../to/image.<md5-hash>.jpg`
+| Source                     | Output                           |
+| -------------------------- | -------------------------------- |
+| `{{image.jpg}}` \*         | `./image.<md5-hash>.jpg`         |
+| `{{./image.jpg}}`          | `./image.<md5-hash>.jpg`         |
+| `{{/image.jpg}}`           | `/image.<md5-hash>.jpg`          |
+| `{{../to/image.jpg}}`      | `../to/image.<md5-hash>.jpg`     |
+| `{{path/to/image.jpg}}` \* | `./path/to/image.<md5-hash>.jpg` |
+| `{{/path/to/image.jpg}}`   | `/path/to/image.<md5-hash>.jpg`  |
 
-`{{path/to/image.jpg}}` → `/path/to/image.<md5-hash>.jpg`
+The paths marked with \* are treated as relative paths, following the HTML tradition. However, they are converted to explicit relative paths to avoid ambiguity and make sure they behave the same way in every file type.
 
 Each template file will also be copied to the target folder specified in the `--target` option.
 
@@ -69,32 +76,27 @@ Make sure the `--dropins` option matches your dropins.
 
 ## Options
 
-```
-  --help                   Show help                                   [boolean]
-  --version                Show version number                         [boolean]
-  --source, --src          Path to the source folder.[string] [default: "./src"]
-  --base                   Base path for absolute paths. Setting this to "" will
-                            make all replaced paths relative.
-                                                         [string] [default: "/"]
-  --target, --out          Path to the target folder.
-                                                   [string] [default: "./build"]
-  --dropins, --dropin      Glob for dropins. These are assets to just copy, but
-                           not to version or modify.                    [string]
-  --assets, --asset        Glob for assets. These are to be renamed.
-                    [string] [default: "**/*.{css,gif,jpg,json,png,webp,woff2}"]
-  --templates, --template  Glob for templates. These are to be modified to expan
-                           d references in their contents.
-                                  [string] [default: "**/*.{css,html,json,php}"]
-  --prefix                 The prefix for references. Changing this will alter t
-                           he reference format to search for in templates and as
-                           set templates.               [string] [default: "{{"]
-  --suffix                 The prefix for references. Changing this will alter t
-                           he reference format to search for in templates and as
-                           set templates.               [string] [default: "}}"]
-  --no-clean               Disable cleaning the target folder.         [boolean]
-  --debug                  Show verbose log output.                    [boolean]
-```
+| Option                      | Description                                                                                                                              |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `--help`                    | Show help.                                                                                                                               |
+| `--version`                 | Show version number.                                                                                                                     |
+| `--source`, `--src`         | Path to the source folder. Default: `"./src"`                                                                                            |
+| `--base`                    | Base path for absolute paths. Setting this to `""` will make all replaced paths relative. Default: `"/"`                                 |
+| `--target`, `--out`         | Path to the target folder. Default: `"./build"`                                                                                          |
+| `--dropins`, `--dropin`     | Glob for dropins. These are assets to just copy, but not to version or modify.                                                           |
+| `--assets`, `--asset`       | Glob for assets. These are to be renamed. Default: `"**/*.{css,gif,jpg,json,png,webp,woff2}"`                                            |
+| `--templates`, `--template` | Glob for templates. These are to be modified to expand references in their contents. Default: `"**/*.{css,html,json,php}"`               |
+| `--prefix`                  | The prefix for references. Changing this will alter the reference format to search for in templates and asset templates. Default: `"{{"` |
+| `--suffix`                  | The suffix for references. Changing this will alter the reference format to search for in templates and asset templates. Default: `"}}"` |
+| `--no-clean`                | Disable cleaning the target folder.                                                                                                      |
+| `--debug`                   | Show verbose log output.                                                                                                                 |
 
 ## License
 
 MIT
+
+## Version history
+
+| Version | Breaking changes                                                    |
+| ------- | ------------------------------------------------------------------- |
+| 2.0.0   | Treat paths like `{{file.txt}}` and `{{sub/file.txt}}` as relative. |

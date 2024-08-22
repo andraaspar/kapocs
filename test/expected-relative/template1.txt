@@ -1,7 +1,23 @@
 Absolute paths:
 
-asset1.txt:                ./asset1.a86f9e0bc0e3a71bafc32f0d594770dd.txt
-asset_template1.txt:       ./asset_template1.af1c870fd0d82bda618fb2bd0d9dfb5f.txt
+/asset1.txt:                ./asset1.0fc68d380bcbd525cd03d894ec3ad4a7.txt
+/asset_template1.txt:       ./asset_template1.8d3883f3dc7643e0f3d740dce3d6fe34.txt
+/dropin.txt:                ./dropin.txt
+/dropin-asset.txt:          ./dropin-asset.txt
+/dropin-asset-template.txt: ./dropin-asset-template.txt
+/dropin-template.txt:       ./dropin-template.txt
+/template1.txt:             ./template1.txt
+/template2.txt:             ./template2.txt
+
+/sub/asset1.txt:            ./sub/asset1.5f75604249517778e6adabac9b048da4.txt
+/sub/asset2.txt:            ./sub/asset2.5f75604249517778e6adabac9b048da4.txt
+/sub/asset_template2.txt:   ./sub/asset_template2.45fbd65581c80ae30619b731888c47aa.txt
+/sub/dropin.txt:            ./sub/dropin.txt
+
+Relative paths with no starting slash:
+
+asset1.txt:                ./asset1.0fc68d380bcbd525cd03d894ec3ad4a7.txt
+asset_template1.txt:       ./asset_template1.8d3883f3dc7643e0f3d740dce3d6fe34.txt
 dropin.txt:                ./dropin.txt
 dropin-asset.txt:          ./dropin-asset.txt
 dropin-asset-template.txt: ./dropin-asset-template.txt
@@ -9,15 +25,15 @@ dropin-template.txt:       ./dropin-template.txt
 template1.txt:             ./template1.txt
 template2.txt:             ./template2.txt
 
-sub/asset1.txt:            ./sub/asset1.6bc902934188a7bd2f9b26e4d4d4cee2.txt
-sub/asset2.txt:            ./sub/asset2.6bc902934188a7bd2f9b26e4d4d4cee2.txt
-sub/asset_template2.txt:   ./sub/asset_template2.aad85a7af54f3164a69c091adb2da6cc.txt
+sub/asset1.txt:            ./sub/asset1.5f75604249517778e6adabac9b048da4.txt
+sub/asset2.txt:            ./sub/asset2.5f75604249517778e6adabac9b048da4.txt
+sub/asset_template2.txt:   ./sub/asset_template2.45fbd65581c80ae30619b731888c47aa.txt
 sub/dropin.txt:            ./sub/dropin.txt
 
 Relative paths:
 
-./asset1.txt:                ./asset1.a86f9e0bc0e3a71bafc32f0d594770dd.txt
-./asset_template1.txt:       ./asset_template1.af1c870fd0d82bda618fb2bd0d9dfb5f.txt
+./asset1.txt:                ./asset1.0fc68d380bcbd525cd03d894ec3ad4a7.txt
+./asset_template1.txt:       ./asset_template1.8d3883f3dc7643e0f3d740dce3d6fe34.txt
 ./dropin.txt:                ./dropin.txt
 ./dropin-asset.txt:          ./dropin-asset.txt
 ./dropin-asset-template.txt: ./dropin-asset-template.txt
@@ -25,7 +41,7 @@ Relative paths:
 ./template1.txt:             ./template1.txt
 ./template2.txt:             ./template2.txt
 
-./sub/asset1.txt:            ./sub/asset1.6bc902934188a7bd2f9b26e4d4d4cee2.txt
-./sub/asset2.txt:            ./sub/asset2.6bc902934188a7bd2f9b26e4d4d4cee2.txt
-./sub/asset_template2.txt:   ./sub/asset_template2.aad85a7af54f3164a69c091adb2da6cc.txt
+./sub/asset1.txt:            ./sub/asset1.5f75604249517778e6adabac9b048da4.txt
+./sub/asset2.txt:            ./sub/asset2.5f75604249517778e6adabac9b048da4.txt
+./sub/asset_template2.txt:   ./sub/asset_template2.45fbd65581c80ae30619b731888c47aa.txt
 ./sub/dropin.txt:            ./sub/dropin.txt

@@ -1,7 +1,7 @@
 {
 	"name": "kapocs",
 	"description": "Cache busting CLI tool. Works with any file type.",
-	"version": "1.0.2",
+	"version": "2.0.0",
 	"type": "module",
 	"main": "build/index.js",
 	"bin": "build/index.js",
@@ -39,8 +39,8 @@
 		"compile-ts": "tsc",
 		"compile": "npm run _yarn && run-s clean compile-ts",
 		"sample": "run-s sample-normal sample-relative",
-		"sample-normal": "node . --source test/src1 --target test/expected-normal --assets \"**/*asset*.txt\" --templates \"**/*template*.txt\" --dropins \"**/*dropin*.txt\"",
-		"sample-relative": "node . --source test/src1 --base \"\" --target test/expected-relative --assets \"**/*asset*.txt\" --templates \"**/*template*.txt\" --dropins \"**/*dropin*.txt\"",
+		"sample-normal": "node . --debug --source test/src1 --target test/expected-normal --assets \"**/*asset*.txt\" --templates \"**/*template*.txt\" --dropins \"**/*dropin*.txt\"",
+		"sample-relative": "node . --debug --source test/src1 --base \"\" --target test/expected-relative --assets \"**/*asset*.txt\" --templates \"**/*template*.txt\" --dropins \"**/*dropin*.txt\"",
 		"test": "vitest"
 	},
 	"dependencies": {
